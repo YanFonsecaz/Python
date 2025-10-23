@@ -1,0 +1,179 @@
+{
+  "audit_info": {
+    "url": "https://httpbin.org/html",
+    "overall_score": 21.11111111111111,
+    "audit_timestamp": "2025-09-27T21:44:48.772939",
+    "report_version": "1.0"
+  },
+  "summary": {
+    "total_validations": 7,
+    "status_counts": {
+      "passed": 3,
+      "warning": 2,
+      "failed": 2,
+      "error": 0
+    },
+    "critical_issues_count": 2,
+    "warnings_count": 2,
+    "top_critical_issues": [
+      "Nenhuma página encontrada para análise",
+      "Nenhuma URL foi descoberta durante o crawl"
+    ],
+    "top_recommendations": [
+      "Verificar robots.txt",
+      "Verificar sitemap.xml",
+      "Configurar Google Analytics 4",
+      "Verificar código de tracking",
+      "Verificar estrutura de links internos",
+      "Verificar propriedade do site",
+      "Verificar se o site está acessível",
+      "Configurar Google Search Console",
+      "Verificar robots.txt e sitemap"
+    ],
+    "data_sources": [
+      "screaming_frog",
+      "chrome_devtools"
+    ],
+    "audit_completeness": 40.0
+  },
+  "validations": [
+    {
+      "validation_type": "response_codes",
+      "status": "passed",
+      "score": 100,
+      "message": "Nenhum código de erro crítico encontrado",
+      "recommendations": [],
+      "timestamp": "2025-09-27T21:44:48.772853",
+      "details": {
+        "error_codes": {}
+      }
+    },
+    {
+      "validation_type": "page_titles",
+      "status": "failed",
+      "score": 0,
+      "message": "Nenhuma página encontrada para análise",
+      "recommendations": [
+        "Verificar se o site está acessível",
+        "Verificar robots.txt e sitemap"
+      ],
+      "timestamp": "2025-09-27T21:44:48.772861",
+      "details": {
+        "missing_titles": 0,
+        "total_pages": 0
+      }
+    },
+    {
+      "validation_type": "meta_descriptions",
+      "status": "passed",
+      "score": 0,
+      "message": "0 páginas sem meta description de 0 páginas",
+      "recommendations": [],
+      "timestamp": "2025-09-27T21:44:48.772863",
+      "details": {
+        "missing_meta": 0,
+        "total_pages": 0
+      }
+    },
+    {
+      "validation_type": "h1_tags",
+      "status": "passed",
+      "score": 0,
+      "message": "0 páginas sem H1 de 0 páginas",
+      "recommendations": [],
+      "timestamp": "2025-09-27T21:44:48.772866",
+      "details": {
+        "missing_h1": 0,
+        "total_pages": 0
+      }
+    },
+    {
+      "validation_type": "crawlability",
+      "status": "failed",
+      "score": 0,
+      "message": "Nenhuma URL foi descoberta durante o crawl",
+      "recommendations": [
+        "Verificar robots.txt",
+        "Verificar sitemap.xml",
+        "Verificar estrutura de links internos"
+      ],
+      "timestamp": "2025-09-27T21:44:48.772873",
+      "details": {
+        "total_urls": 0
+      }
+    },
+    {
+      "validation_type": "ga4_integration",
+      "status": "warning",
+      "score": 50,
+      "message": "Google Analytics 4 não configurado ou sem dados",
+      "recommendations": [
+        "Configurar Google Analytics 4",
+        "Verificar código de tracking"
+      ],
+      "timestamp": "2025-09-27T21:44:48.772876",
+      "details": {}
+    },
+    {
+      "validation_type": "gsc_integration",
+      "status": "warning",
+      "score": 50,
+      "message": "Google Search Console não configurado ou sem dados",
+      "recommendations": [
+        "Configurar Google Search Console",
+        "Verificar propriedade do site"
+      ],
+      "timestamp": "2025-09-27T21:44:48.772878",
+      "details": {}
+    }
+  ],
+  "metadata": {
+    "total_validations": 7,
+    "generation_timestamp": "2025-09-27T21:44:48.773561",
+    "data_sources_used": [
+      "screaming_frog",
+      "chrome_devtools"
+    ]
+  },
+  "raw_data": {
+    "screaming_frog": {
+      "url": "https://httpbin.org/html",
+      "crawl_timestamp": 1759020275,
+      "summary": {
+        "total_urls": 0,
+        "response_codes_count": {},
+        "images_count": 0,
+        "external_links_count": 0,
+        "pages_without_title": 0,
+        "pages_without_meta_description": 0,
+        "pages_without_h1": 0
+      },
+      "technical_issues": [],
+      "raw_data": {
+        "urls": [],
+        "response_codes": [],
+        "page_titles": [],
+        "meta_descriptions": [],
+        "h1_tags": [],
+        "images": [],
+        "external_links": [],
+        "summary": {
+          "total_urls": 0,
+          "response_codes_count": {},
+          "images_count": 0,
+          "external_links_count": 0,
+          "pages_without_title": 0,
+          "pages_without_meta_description": 0,
+          "pages_without_h1": 0
+        }
+      },
+      "output_files": []
+    },
+    "chrome_devtools": {
+      "performance_trace": {},
+      "network_requests": [],
+      "console_messages": [],
+      "lighthouse_audit": {}
+    }
+  }
+}

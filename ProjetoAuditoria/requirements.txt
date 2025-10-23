@@ -1,0 +1,49 @@
+# Dependências principais do Flask
+flask==3.0.0
+flask-cors==4.0.0
+flask-socketio==5.3.6
+python-dotenv==1.0.0
+
+# APIs do Google (GA4, GSC, Google Docs)
+google-analytics-data==0.18.0
+google-api-python-client==2.108.0
+google-auth==2.23.4
+google-auth-oauthlib==1.1.0
+google-auth-httplib2==0.2.0
+
+# Processamento de dados básico
+requests==2.31.0
+
+# Geração de relatórios
+jinja2==3.1.2
+
+# Testes
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+
+# Utilitários
+python-dateutil==2.8.2
+pyyaml==6.0.1
+
+# Logging
+structlog==23.2.0
+
+# Cliente HTTP
+httpx==0.25.2
+
+# Processamento de HTML/XML
+beautifulsoup4==4.12.2
+
+# Utilitários de sistema
+psutil==5.9.6
+
+# AI/LLM
+ollama
+
+# Geração de documentos Word
+python-docx==0.8.11
+
+# Cache Redis
+redis==5.0.1
+hiredis==2.2.3

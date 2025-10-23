@@ -1,0 +1,16 @@
+id,category,description,validation_method,expected_result,priority
+CWV_LCP,Core Web Vitals,Verificar Largest Contentful Paint (LCP),PageSpeed Insights + Chrome DevTools,LCP < 2.5s,High
+CWV_FID,Core Web Vitals,Verificar First Input Delay (FID),PageSpeed Insights + Chrome DevTools,FID < 100ms,High
+CWV_CLS,Core Web Vitals,Verificar Cumulative Layout Shift (CLS),PageSpeed Insights + Chrome DevTools,CLS < 0.1,High
+CRAWL_STATUS,Rastreio,Verificar status HTTP da página,Screaming Frog + HTTP Request,Status 200,Critical
+CRAWL_ROBOTS,Rastreio,Verificar arquivo robots.txt,HTTP Request + Análise,Arquivo válido e acessível,High
+CRAWL_SITEMAP,Rastreio,Verificar sitemap.xml,HTTP Request + Análise,Sitemap válido e acessível,High
+CRAWL_INDEX,Rastreio,Verificar indexabilidade da página,GSC + Meta tags,Página indexável,High
+META_TITLE,Outros,Verificar título da página,Screaming Frog + HTML Analysis,Título presente e otimizado,Medium
+META_DESC,Outros,Verificar meta description,Screaming Frog + HTML Analysis,Meta description presente,Medium
+META_H1,Outros,Verificar tag H1,HTML Analysis + Chrome DevTools,H1 único e descritivo,Medium
+SCHEMA_ORG,Outros,Verificar dados estruturados,HTML Analysis + Google Testing Tool,Schema.org válido,Medium
+IMAGES_ALT,Outros,Verificar atributos alt em imagens,HTML Analysis + Chrome DevTools,Todas imagens com alt,Low
+LINKS_INTERNAL,Outros,Verificar links internos,Screaming Frog + HTML Analysis,Links funcionais,Low
+MOBILE_FRIENDLY,Core Web Vitals,Verificar responsividade mobile,Chrome DevTools + Mobile Testing,Design responsivo,High
+PAGE_SPEED,Core Web Vitals,Verificar velocidade de carregamento,PageSpeed Insights,Score > 90,High

@@ -1,0 +1,2 @@
+url,overall_score,audit_date,passed_count,warning_count,failed_count,critical_issues_count,data_completeness,confidence_level
+<Mock name='mock.url' id='5103021632'>,<Mock name='mock.overall_score' id='5103021296'>,<Mock name='mock.audit_timestamp.strftime()' id='5103019616'>,0,0,0,0,0,0

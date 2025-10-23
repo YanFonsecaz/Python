@@ -1,0 +1,5 @@
+{
+  "code": "INTERNAL_ERROR",
+  "details": "[Errno 2] No such file or directory: '/Users/yan/Documents/GitHub/Python/ProjetoAuditoria/app/data/reports/audit_httpbin.org_html_20250927_214448.json'",
+  "error": "Erro interno do servidor"
+}

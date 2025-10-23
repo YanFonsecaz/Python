@@ -1,0 +1,93 @@
+# Configuração do Prometheus para Sistema de Auditoria SEO
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'seo-audit-monitor'
+    environment: 'production'
+
+# Regras de alerta
+rule_files:
+  - "alert_rules.yml"
+
+# Configuração do Alertmanager
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Configuração de scraping
+scrape_configs:
+  # Métricas do próprio Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Métricas da aplicação SEO Audit
+  - job_name: 'seo-audit-api'
+    static_configs:
+      - targets: ['seo-audit-api:9090']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    honor_labels: true
+    params:
+      format: ['prometheus']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: seo-audit-api:9090
+
+  # Métricas do sistema (Node Exporter)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Métricas do Docker (cAdvisor)
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Métricas do Nginx
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:9113']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Métricas customizadas da aplicação
+  - job_name: 'seo-audit-custom'
+    static_configs:
+      - targets: ['seo-audit-api:5000']
+    scrape_interval: 30s
+    metrics_path: /admin/metrics
+    basic_auth:
+      username: 'admin'
+      password: 'monitoring_password'
+    params:
+      format: ['prometheus']
+
+# Configuração de armazenamento
+storage:
+  tsdb:
+    path: /prometheus
+    retention.time: 30d
+    retention.size: 10GB
+    wal-compression: true
+
+# Configuração de consultas
+query:
+  timeout: 2m
+  max_concurrency: 20
+  max_samples: 50000000

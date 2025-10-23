@@ -1,0 +1,206 @@
+# Regras de Alerta - Sistema de Auditoria SEO
+
+groups:
+  - name: seo_audit_alerts
+    rules:
+      # Aplicação não está respondendo
+      - alert: SEOAuditDown
+        expr: up{job="seo-audit-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: seo-audit
+        annotations:
+          summary: "Sistema de Auditoria SEO está fora do ar"
+          description: "A aplicação SEO Audit não está respondendo há {{ $value }} minutos."
+
+      # Alto uso de CPU
+      - alert: HighCPUUsage
+        expr: (100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "Alto uso de CPU detectado"
+          description: "CPU usage está em {{ $value }}% na instância {{ $labels.instance }}."
+
+      # Alto uso de memória
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "Alto uso de memória detectado"
+          description: "Uso de memória está em {{ $value }}% na instância {{ $labels.instance }}."
+
+      # Pouco espaço em disco
+      - alert: LowDiskSpace
+        expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Pouco espaço em disco"
+          description: "Espaço em disco está em {{ $value }}% na instância {{ $labels.instance }}, mount point {{ $labels.mountpoint }}."
+
+      # Muitas auditorias falhando
+      - alert: HighAuditFailureRate
+        expr: rate(seo_audit_failures_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          service: seo-audit
+        annotations:
+          summary: "Alta taxa de falhas em auditorias"
+          description: "Taxa de falhas em auditorias está em {{ $value }} por segundo."
+
+      # Fila de processamento muito grande
+      - alert: LargeProcessingQueue
+        expr: seo_audit_queue_size > 50
+        for: 5m
+        labels:
+          severity: warning
+          service: seo-audit
+        annotations:
+          summary: "Fila de processamento muito grande"
+          description: "Fila de processamento tem {{ $value }} itens pendentes."
+
+      # Tempo de resposta alto
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(flask_request_duration_seconds_bucket[5m])) > 10
+        for: 3m
+        labels:
+          severity: warning
+          service: seo-audit
+        annotations:
+          summary: "Tempo de resposta alto"
+          description: "95% das requisições estão levando mais de {{ $value }} segundos."
+
+      # Muitos erros HTTP
+      - alert: HighErrorRate
+        expr: rate(flask_request_exceptions_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          service: seo-audit
+        annotations:
+          summary: "Alta taxa de erros HTTP"
+          description: "Taxa de erros HTTP está em {{ $value }} por segundo."
+
+      # Cache com baixa taxa de hit
+      - alert: LowCacheHitRate
+        expr: (seo_audit_cache_hits / (seo_audit_cache_hits + seo_audit_cache_misses)) * 100 < 70
+        for: 10m
+        labels:
+          severity: info
+          service: seo-audit
+        annotations:
+          summary: "Baixa taxa de hit do cache"
+          description: "Taxa de hit do cache está em {{ $value }}%."
+
+      # Banco de dados não está respondendo
+      - alert: DatabaseDown
+        expr: seo_audit_database_connection_status == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: database
+        annotations:
+          summary: "Banco de dados não está respondendo"
+          description: "Conexão com o banco de dados está falhando."
+
+      # Processamento assíncrono com muitas falhas
+      - alert: HighAsyncProcessingFailures
+        expr: rate(seo_audit_async_task_failures_total[5m]) > 0.02
+        for: 3m
+        labels:
+          severity: warning
+          service: async-processing
+        annotations:
+          summary: "Muitas falhas no processamento assíncrono"
+          description: "Taxa de falhas no processamento assíncrono está em {{ $value }} por segundo."
+
+      # Selenium com muitos timeouts
+      - alert: HighSeleniumTimeouts
+        expr: rate(seo_audit_selenium_timeouts_total[5m]) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+          service: selenium
+        annotations:
+          summary: "Muitos timeouts no Selenium"
+          description: "Taxa de timeouts no Selenium está em {{ $value }} por segundo."
+
+  - name: system_alerts
+    rules:
+      # Container reiniciando frequentemente
+      - alert: ContainerRestarting
+        expr: increase(container_start_time_seconds[1h]) > 3
+        for: 0m
+        labels:
+          severity: warning
+          service: docker
+        annotations:
+          summary: "Container reiniciando frequentemente"
+          description: "Container {{ $labels.name }} reiniciou {{ $value }} vezes na última hora."
+
+      # Alto uso de rede
+      - alert: HighNetworkUsage
+        expr: rate(node_network_receive_bytes_total[5m]) > 100000000  # 100MB/s
+        for: 5m
+        labels:
+          severity: info
+          service: network
+        annotations:
+          summary: "Alto uso de rede"
+          description: "Interface {{ $labels.device }} está recebendo {{ $value }} bytes/s."
+
+      # Muitas conexões TCP
+      - alert: HighTCPConnections
+        expr: node_netstat_Tcp_CurrEstab > 1000
+        for: 5m
+        labels:
+          severity: warning
+          service: network
+        annotations:
+          summary: "Muitas conexões TCP estabelecidas"
+          description: "{{ $value }} conexões TCP estabelecidas na instância {{ $labels.instance }}."
+
+  - name: business_alerts
+    rules:
+      # Auditoria demorada
+      - alert: LongRunningAudit
+        expr: seo_audit_duration_seconds > 3600  # 1 hora
+        for: 0m
+        labels:
+          severity: info
+          service: seo-audit
+        annotations:
+          summary: "Auditoria executando há muito tempo"
+          description: "Auditoria {{ $labels.audit_id }} está executando há {{ $value }} segundos."
+
+      # Muitas auditorias simultâneas
+      - alert: TooManyActiveAudits
+        expr: seo_audit_active_count > 10
+        for: 5m
+        labels:
+          severity: warning
+          service: seo-audit
+        annotations:
+          summary: "Muitas auditorias ativas"
+          description: "{{ $value }} auditorias estão executando simultaneamente."
+
+      # API externa com muitas falhas
+      - alert: ExternalAPIFailures
+        expr: rate(seo_audit_external_api_failures_total[5m]) > 0.1
+        for: 3m
+        labels:
+          severity: warning
+          service: external-api
+        annotations:
+          summary: "Muitas falhas em APIs externas"
+          description: "Taxa de falhas em APIs externas está em {{ $value }} por segundo para {{ $labels.api_name }}."

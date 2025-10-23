@@ -1,0 +1,121 @@
+# Dependências específicas para produção
+
+# Servidor WSGI
+gunicorn==21.2.0
+gevent==23.9.1
+
+# Monitoramento e métricas
+prometheus-client==0.19.0
+psutil==5.9.6
+
+# Logging avançado
+structlog==23.2.0
+python-json-logger==2.0.7
+
+# Segurança
+cryptography==41.0.7
+bcrypt==4.1.2
+
+# Performance
+ujson==5.8.0
+orjson==3.9.10
+
+# Banco de dados (produção)
+SQLAlchemy==2.0.23
+alembic==1.13.1
+
+# Cache Redis (opcional)
+redis==5.0.1
+hiredis==2.2.3
+
+# Processamento assíncrono
+celery==5.3.4
+kombu==5.3.4
+
+# Validação e serialização
+marshmallow==3.20.1
+cerberus==1.3.5
+
+# HTTP cliente otimizado
+httpx==0.25.2
+aiohttp==3.9.1
+
+# Compressão
+brotli==1.1.0
+zstandard==0.22.0
+
+# Análise de performance
+py-spy==0.3.14
+memory-profiler==0.61.0
+
+# Backup e sincronização
+boto3==1.34.0  # Para AWS S3
+azure-storage-blob==12.19.0  # Para Azure Blob
+
+# Notificações
+slack-sdk==3.26.1
+sendgrid==6.11.0
+
+# Documentação API
+flasgger==0.9.7.1
+
+# Timezone
+pytz==2023.3.post1
+
+# Validação de dados
+pydantic==2.5.0
+email-validator==2.1.0
+
+# Rate limiting distribuído
+flask-limiter[redis]==3.5.0
+
+# Middleware de segurança
+flask-talisman==1.1.0
+
+# CORS otimizado
+flask-cors==4.0.0
+
+# Compressão de resposta
+flask-compress==1.14
+
+# Sessões seguras
+flask-session==0.5.0
+
+# Autenticação JWT
+pyjwt==2.8.0
+
+# Validação de entrada
+wtforms==3.1.1
+
+# Processamento de imagens
+pillow==10.1.0
+
+# Análise de texto
+textstat==0.7.3
+langdetect==1.0.9
+
+# Processamento de CSV otimizado
+pandas==2.1.4
+numpy==1.25.2
+
+# Análise de URLs
+tldextract==5.1.1
+publicsuffix2==2.20191221
+
+# Processamento XML/HTML otimizado
+lxml==4.9.3
+selectolax==0.3.17
+
+# Compressão de arquivos
+zipfile38==0.0.3
+
+# Utilitários de sistema
+click==8.1.7
+colorama==0.4.6
+
+# Desenvolvimento e debug (apenas se DEBUG=True)
+flask-debugtoolbar==0.13.1; python_version>="3.8"
+werkzeug==3.0.1
+
+# Testes de carga
+locust==2.17.0

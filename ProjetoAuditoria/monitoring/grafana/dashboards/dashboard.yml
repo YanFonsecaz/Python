@@ -1,0 +1,14 @@
+# Configuração de Dashboards - Grafana
+
+apiVersion: 1
+
+providers:
+  - name: 'SEO Audit Dashboards'
+    orgId: 1
+    folder: 'SEO Audit System'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

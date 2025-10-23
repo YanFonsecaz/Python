@@ -1,0 +1,122 @@
+# Dockerfile para produção - Sistema de Auditoria SEO
+FROM python:3.11-slim
+
+# Definir variáveis de ambiente
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    ENVIRONMENT=production \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Criar usuário não-root para segurança
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Instalar dependências do sistema
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    gnupg2 \
+    software-properties-common \
+    apt-transport-https \
+    ca-certificates \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instalar Google Chrome para Selenium
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instalar ChromeDriver
+RUN CHROME_VERSION=$(google-chrome --version | cut -d " " -f3 | cut -d "." -f1) \
+    && CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}") \
+    && wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" \
+    && unzip /tmp/chromedriver.zip -d /tmp/ \
+    && mv /tmp/chromedriver /usr/local/bin/chromedriver \
+    && chmod +x /usr/local/bin/chromedriver \
+    && rm /tmp/chromedriver.zip
+
+# Criar diretórios da aplicação
+RUN mkdir -p /app /app/data /app/cache /app/logs /app/uploads /app/reports /app/temp \
+    && chown -R appuser:appuser /app
+
+# Definir diretório de trabalho
+WORKDIR /app
+
+# Copiar requirements primeiro para aproveitar cache do Docker
+COPY requirements.txt /app/
+COPY requirements-prod.txt /app/
+
+# Instalar dependências Python
+RUN pip install --upgrade pip \
+    && pip install -r requirements.txt \
+    && pip install -r requirements-prod.txt
+
+# Copiar código da aplicação
+COPY . /app/
+
+# Criar arquivo de configuração do Chrome para Selenium
+RUN echo '#!/bin/bash\n\
+google-chrome \
+--no-sandbox \
+--disable-dev-shm-usage \
+--disable-gpu \
+--disable-extensions \
+--disable-plugins \
+--disable-images \
+--disable-javascript \
+--disable-default-apps \
+--disable-background-timer-throttling \
+--disable-backgrounding-occluded-windows \
+--disable-renderer-backgrounding \
+--disable-features=TranslateUI \
+--disable-ipc-flooding-protection \
+--headless \
+--remote-debugging-port=9222 \
+"$@"' > /usr/local/bin/google-chrome-headless \
+    && chmod +x /usr/local/bin/google-chrome-headless
+
+# Configurar permissões
+RUN chown -R appuser:appuser /app \
+    && chmod +x /app/scripts/start-production.sh
+
+# Criar script de inicialização
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+echo "=== Sistema de Auditoria SEO - Produção ==="\n\
+echo "Iniciando aplicação..."\n\
+\n\
+# Validar configurações\n\
+python -c "from config.production import ProductionConfig; result = ProductionConfig.validate_config(); print(f\"Configuração: {\"VÁLIDA\" if result[\"valid\"] else \"INVÁLIDA\"}\"); [print(f\"ERRO: {issue}\") for issue in result[\"issues\"]]; [print(f\"AVISO: {warning}\") for warning in result[\"warnings\"]]"\n\
+\n\
+# Criar diretórios necessários\n\
+python -c "from config.production import create_production_directories; result = create_production_directories(); print(f\"Diretórios criados: {len(result[\"created\"])}\"); [print(f\"ERRO: {error}\") for error in result[\"errors\"]]"\n\
+\n\
+# Inicializar banco de dados\n\
+python -c "from app.database import DatabaseManager; db = DatabaseManager(); print(\"Banco de dados inicializado\")"\n\
+\n\
+# Iniciar aplicação com Gunicorn\n\
+echo "Iniciando Gunicorn..."\n\
+exec gunicorn --config gunicorn.conf.py app.main:app\n\
+' > /app/start.sh \
+    && chmod +x /app/start.sh
+
+# Configurar healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:5000/health || exit 1
+
+# Mudar para usuário não-root
+USER appuser
+
+# Expor portas
+EXPOSE 5000 9090
+
+# Definir volumes
+VOLUME ["/app/data", "/app/cache", "/app/logs", "/app/uploads", "/app/reports", "/app/temp"]
+
+# Comando padrão
+CMD ["/app/start.sh"]

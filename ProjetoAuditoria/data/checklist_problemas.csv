@@ -1,0 +1,158 @@
+Problemas de Accessibilidade/Encontrabilidade
+O site está sendo indexado de forma eficiente
+#ERROR!
+Sitemap XML encontrado em robots.txt
+Sitemap XML Otimizado
+"Uso de tags de meta robots (follow/nofollow, index/noindex)"
+Configuração adequada para página de Erro 404
+#ERROR!
+Erros no Lado do Servidor (50x)
+#ERROR!
+Análise de LogFile
+Sitemaps XML da Página
+Site tem Sitemap XML?
+Sitemap(s) XML da Página Estão Listados no GSC
+Sitemap XML da Página com Links Quebrados
+Sub-domínios
+Indexamento de sub-domínios
+Sub-domínios têm sitemaps
+Sub-domínios têm robots.txt
+Arquitetura
+Breadcrumbs Encontrados e Disponíveis em Todas As Páginas
+Breadcrumbs: você pode clicar nas últimas 2-3 páginas?
+Há uma barra de navegação otimizada?
+Barra de navegação/menu em HTML
+O site tem rodapé otimizado?
+Páginas que exigem mais de três cliques para alcançar
+Há backlink do site (domínio) para o blog (subdomínio) e vice-versa?
+Hierarquia de URLs
+Problemas da URL
+Hífens usados como delimitador default em URLs
+Usabilidade geral da URL (curta e fácil de compartilhar)
+Otimização geral da URL (usa de palavras-chave segmentadas)
+Otimização para Mobile
+Tag viewport configurada corretamente
+Ferramenta Adaptada para Google Mobile
+Problemas com Tags na Página/Markup
+HTML Doctype declarada
+Não uso de meta-refresh
+"Fonte da página contém tags META tags (ex.: <title>, meta description no cabeçalho)"
+Tag <title>
+Title tag ausente ou vazia
+<title> duplicado
+#ERROR!
+Título curto demais - menos de 30 caracteres
+O mesmo que H1
+Múltiplas title tags
+Tag <meta description>
+Tag meta description ausente ou vazia
+#ERROR!
+Meta description longa demais - mais de 155 caracteres
+Meta description curta demais - menos de 70 caracteres
+#ERROR!
+Headings da Página (H1-H6)
+#ERROR!
+Tags H1 duplicadas em várias páginas
+Heading H1 acima da dobra
+#ERROR!
+Hierarquia de Heading Tags
+Dados Estruturados
+Uso de markup de Dados Estruturados
+Uso do tipo de esquema: Article
+Uso do tipo de esquema: BlogPosting
+Uso do tipo de esquema: Breadcrumb
+Uso do tipo de esquema: BroadcastEvent
+Uso do tipo de esquema: Course
+Uso do tipo de esquema: Event
+Uso do tipo de esquema: FAQPage
+Uso do tipo de esquema: HowTo
+Uso do tipo de esquema: LocalBusiness
+Uso do tipo de esquema: Logo
+Uso do tipo de esquema: NewsArticle
+Uso do tipo de esquema: Organization
+Uso do tipo de esquema: Product
+Uso do tipo de esquema: RealEstate
+Uso do tipo de esquema: Recipe
+Uso do tipo de esquema: Review
+Uso do tipo de esquema: Sitelinks Search Box
+Uso do tipo de esquema: SoftwareApplication
+Uso do tipo de esquema: VideoObject
+Uso do tipo de esquema: WebSite
+Não há erros no esquema de marcação
+Não há avisos no esquema de marcação
+Conteúdo do Corpo Principal
+Presença de Lorem Ipsum no Conteúdo
+#ERROR!
+Conteúdo não indexável (ex: uso de JS)
+"Conteúdo injetado por HTML, não JS"
+Não uso de Flash
+Cuidado no uso de Iframe
+Não há conteúdo escondido
+Imagens de SEO
+#ERROR!
+#ERROR!
+#ERROR!
+Migração de URL
+#ERROR!
+SEO Internacional
+"Uso do atributo lang (<html lang=""pt-BR"">...</html>)"
+Diretiva de idioma alternativo HREFLANG no cabeçalho do Código Fonte 
+Uso de URLs hreflang com código de status 200
+URLs Hreflang não vinculadas
+Links de retorno ausentes
+Links de retorno de idioma e região inconsistentes
+Links de retorno não canônicos
+Links de retorno Noindex
+Códigos de idioma e região incorretos
+Entradas múltiplas
+Auto-referência ausente
+Não usando canônico
+X-Default ausente
+Páginas AMP
+Uso de Páginas AMP em /amp/ estrutura de URL
+Uso de rel=canonical em página AMP para página regular
+Uso de rel=alternate em página regular para página AMP
+HTML declarada como amp html
+AMP não-indexável
+Potenciais Gatilhos de Conteúdo Duplicado
+www vs. non-www
+http vs. https
+#ERROR!
+#ERROR!
+Conteúdo duplicado
+Uso de Self Canonical
+#ERROR!
+#ERROR!
+Autoridade
+Página com biografia do autor (blog)
+"Implementação de rel=""author"" (blog)"
+Avaliação dos clientes (página de produto)
+Problemas com Links
+#ERROR!
+Problemas com Google Search Console
+Google Search Console: Ações Manuais 
+Google Search Console: Página Não Encontrada
+Google Search Console: Páginas Bloqueadas por Robots.txt
+Google Search Console: Páginas Indexadas
+Google Search Console: Indexação de Sitemap
+Google Search Console: Estatísticas de Rastreamento
+Problemas de Tagueamento
+Tag do Google Analytics
+Tagueamento de meta de conversão
+Problemas de Segurança
+Certificado SSL
+Verificação de segurança e scanner de malware
+Sem suporte HSTS
+#ERROR!
+Páginas HTTPS levando a recursos HTTP
+Propriedade de SEO
+Redirecionamentos 302
+#ERROR!
+Loops de Redirecionamento
+Redirecionamentos Quebrados
+Velocidade da Página
+Páginas lentas
+"Google Page Speed Insights abaixo de 70 (desktop) - home page, landing page"
+"Google Page Speed Insights abaixo de 50 (mobile) - home page, landing page"
+"Teste de velocidade abaixo de 80% usando GTMetrix - home page, landing page"
+Experiência na Página
