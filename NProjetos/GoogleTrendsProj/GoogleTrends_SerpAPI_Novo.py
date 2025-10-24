@@ -6,7 +6,8 @@ Este script:
 - Busca no Google Trends (categoria 47 – Automóveis/Autos) os Top 10 termos e Rising Queries.
 - Para cada termo, consulta 2–3 notícias no Google News (priorizando as mais recentes do dia).
 - Remove duplicatas, valida links e gera uma saída em Markdown com tabela + resumo.
-- Usa variáveis de ambiente (SERPAPI_API_KEY, OPENAI_API_KEY, OPENAI_MODEL) — não inclua segredos no código.
+- LLM para resumo: Ollama (gemma3:4b) via REST API (configure OLLAMA_HOST e OLLAMA_MODEL).
+- Usa variáveis de ambiente (SERPAPI_API_KEY, OLLAMA_HOST, OLLAMA_MODEL) — não inclua segredos no código.
 - Frequência sugerida: 08:00 e 12:00 (America/Sao_Paulo). Pode ser agendado via cron ou com a lib "schedule" se disponível.
 """
 
@@ -21,8 +22,10 @@ from datetime import datetime, timezone
 TZ = os.getenv("APP_TZ", "America/Sao_Paulo")
 
 SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY", "")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+
+# Ollama config (LLM)
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gemma3:4b")
 
 HL = "pt-BR"  # idioma
 GEO = "BR"    # país
@@ -189,29 +192,35 @@ def fetch_news_for_term(term: str, num: int = 6) -> List[Dict]:
 
 
 # ----------------------
-# Resumo com IA (OpenAI opcional)
+# Resumo com LLM (Ollama gemma3:4b)
 # ----------------------
 
 def summarize_text(text: str) -> str:
-    """Usa OpenAI se OPENAI_API_KEY estiver disponível; caso contrário, gera resumo simples."""
-    if OPENAI_API_KEY:
-        try:
-            from openai import OpenAI  # type: ignore
-            client = OpenAI(api_key=OPENAI_API_KEY)
-            prompt = (
-                "Resuma em 2 a 4 frases, em português do Brasil, destacando fato principal, impacto no setor de Autos/Carros,"
-                " e quem/onde/quando se relevante. Seja conciso e objetivo. Texto:\n\n" + text
-            )
-            resp = client.chat.completions.create(
-                model=OPENAI_MODEL,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.2,
-            )
-            return resp.choices[0].message.content.strip()
-        except Exception as e:
-            return f"Resumo simples (fallback). Erro IA: {e}\n- {text[:400]}..."
-    # Fallback simples
-    # Pega primeiras 2–3 sentenças curtas
+    """Usa Ollama (gemma3:4b) via REST API; fallback simples se indisponível."""
+    try:
+        prompt = (
+            "Resuma em 2 a 4 frases, em português do Brasil, destacando fato principal, impacto no setor de Autos/Carros,"
+            " e quem/onde/quando se relevante. Seja conciso e objetivo. Texto:\n\n" + text
+        )
+        resp = requests.post(
+            f"{OLLAMA_HOST}/api/generate",
+            json={
+                "model": OLLAMA_MODEL,
+                "prompt": prompt,
+                "stream": False,
+                "options": {"temperature": 0.2},
+            },
+            timeout=60,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        content = data.get("response", "").strip()
+        if content:
+            return content
+    except Exception as e:
+        # log simplificado
+        sys.stderr.write(f"[WARN] Ollama resumo falhou: {e}\n")
+    # Fallback simples se Ollama indisponível
     sentences = [s.strip() for s in text.replace("\n", " ").split(".") if s.strip()]
     return ". ".join(sentences[:3]) + ("." if sentences else "")
 
