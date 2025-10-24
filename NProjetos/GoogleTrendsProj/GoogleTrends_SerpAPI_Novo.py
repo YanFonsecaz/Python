@@ -107,8 +107,24 @@ def fetch_trends(data_type: str) -> Dict:
         "hl": HL,
         "geo": GEO,
         "date": DATE_RANGE,
-        "category": CATEGORY_AUTOS,
+        "cat": CATEGORY_AUTOS,
         "data_type": data_type,
+        "api_key": SERPAPI_API_KEY,
+    }
+    return _safe_get(SERPAPI_ENDPOINT, params)
+
+
+def fetch_related_queries(seed: str) -> Dict:
+    """Usa data_type=RELATED_QUERIES com uma consulta semente (seed)."""
+    _require_serpapi()
+    params = {
+        "engine": "google_trends",
+        "hl": HL,
+        "geo": GEO,
+        "date": DATE_RANGE,
+        "cat": CATEGORY_AUTOS,
+        "data_type": "RELATED_QUERIES",
+        "q": seed,
         "api_key": SERPAPI_API_KEY,
     }
     return _safe_get(SERPAPI_ENDPOINT, params)
@@ -119,24 +135,23 @@ def parse_terms_from_trends(payload: Dict, kind: str) -> List[str]:
     terms = []
     if not isinstance(payload, dict):
         return terms
-    # Estruturas possíveis (variam com SerpAPI)
-    # Tenta chaves comuns
-    candidates = [
-        "top_queries", "rising_queries", "queries", "related_queries", "results"
-    ]
-    for key in candidates:
-        data = payload.get(key)
-        if isinstance(data, list):
-            for item in data:
-                q = item.get("query") or item.get("topic") or item.get("title")
+    # Preferir estrutura de RELATED_QUERIES
+    rq = payload.get("related_queries")
+    if isinstance(rq, dict):
+        bucket = rq.get("top" if kind == "Top" else "rising")
+        if isinstance(bucket, list):
+            for item in bucket:
+                q = item.get("query") or item.get("title")
                 if q and isinstance(q, str):
                     terms.append(q)
-    # Fallback: se não veio nada, tenta dentro de "data"/"news_results" etc.
+    # Fallback genérico
     if not terms:
-        for v in payload.values():
-            if isinstance(v, list):
-                for item in v:
-                    q = item.get("query") or item.get("title")
+        candidates = ["top_queries", "rising_queries", "queries", "related_queries", "results"]
+        for key in candidates:
+            data = payload.get(key)
+            if isinstance(data, list):
+                for item in data:
+                    q = item.get("query") or item.get("topic") or item.get("title")
                     if q and isinstance(q, str):
                         terms.append(q)
     # Normaliza, limita
@@ -147,8 +162,7 @@ def parse_terms_from_trends(payload: Dict, kind: str) -> List[str]:
         if t2 and t2.lower() not in seen:
             seen.add(t2.lower())
             uniq.append(t2)
-    # Top 10 por padrão
-    return uniq[:10] if kind == "Top" else uniq[:10]
+    return uniq[:10]
 
 
 # ----------------------
@@ -231,13 +245,29 @@ def summarize_text(text: str) -> str:
 
 def collect_and_render_markdown() -> str:
     """Coleta termos Top + Rising e busca notícias por termo; retorna Markdown com tabela + resumo."""
-    top_payload = fetch_trends("TOP_QUERIES")
-    rising_payload = fetch_trends("RISING_QUERIES")
+    # Em vez de TOP/RISING por categoria diretamente, usamos seeds e RELATED_QUERIES
+    seeds = [
+        "carros", "automóveis", "SUV", "sedan", "picape", "veículo elétrico", "veículo híbrido"
+    ]
+    top_terms = []
+    rising_terms = []
+    for s in seeds:
+        payload = fetch_related_queries(s)
+        top_terms += parse_terms_from_trends(payload, kind="Top")
+        rising_terms += parse_terms_from_trends(payload, kind="Rising")
+    # Dedupe e limitar a 10
+    def dedup_limit(lst):
+        out = []
+        seen = set()
+        for t in lst:
+            tl = t.lower()
+            if tl not in seen:
+                seen.add(tl)
+                out.append(t)
+        return out[:10]
+    top_terms = dedup_limit(top_terms)
+    rising_terms = dedup_limit(rising_terms)
 
-    top_terms = parse_terms_from_trends(top_payload, kind="Top")
-    rising_terms = parse_terms_from_trends(rising_payload, kind="Rising")
-
-    # Critério de qualidade: tentar cobrir pelo menos 80% (se vazio, avisa)
     coverage_note = ""
     if not top_terms and not rising_terms:
         coverage_note = "[ALERTA] Não foi possível obter termos do Trends."
@@ -247,7 +277,6 @@ def collect_and_render_markdown() -> str:
         for term in terms:
             news = fetch_news_for_term(term, num=6)
             for item in news:
-                # Monta texto para resumo (título + fonte)
                 brief = f"{item['title']} — {item['source']} ({item['date']})"
                 summary = summarize_text(brief)
                 rows.append({
