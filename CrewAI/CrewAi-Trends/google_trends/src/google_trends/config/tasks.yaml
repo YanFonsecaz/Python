@@ -1,0 +1,100 @@
+Task_ColetorTrends:
+  description: >
+    Busque os Top 10 termos e as Rising Queries (consultas em ascensão) do setor de Autos/Carros (categoria 47 do Google Trends).
+    Retorne uma lista estruturada com:
+    - Palavra-chave
+    - Tipo (top ou rising)
+    - Score ou volume (se disponível)
+  expected_output: >
+    O formato de saída deve ser JSON estruturado, Exemplo:
+    [
+      {"keyword": "carros elétricos", "type": "rising", "score": 89},
+      {"keyword": "SUV híbrido", "type": "top", "score": 72}
+    ]
+  agent: Agent_ColetorTrends
+  output_key: trends_data
+
+Task_BuscadorNoticias:
+  description: >
+    Para cada palavra-chave recebida do agente de tendências, utilize a SERPAPI para buscar 2 a 3 notícias recentes do dia no Google News.
+    A busca deve priorizar:
+    - Notícias do mesmo dia (ou D-1, se indisponível).
+    - Fontes confiáveis (portais de notícias reconhecidos).
+    - Exclusão de duplicatas (mesmo título/link).
+    
+  expected_output: >
+    Retorne o resultado no formato JSON, Exemplo:
+    [
+      {
+        "keyword": "carros elétricos",
+        "articles": [
+          {
+            "title": "Vendas de carros elétricos disparam no Brasil",
+            "link": "https://g1.globo.com/...",
+            "source": "G1",
+            "date": "2025-10-30"
+          },
+          {
+            "title": "Montadoras ampliam linha de híbridos",
+            "link": "https://www.estadao.com.br/...",
+            "source": "Estadão",
+            "date": "2025-10-30"
+          }
+        ]
+      }
+    ]
+  agent: Agent_BuscadorNoticias
+  # Usa o resultado do Task_ColetorTrends como contexto
+  context: ["Task_ColetorTrends"]
+  output_key: news_data
+
+Task_Resumo:
+  description: >
+    Leia a lista de notícias retornadas e gere resumos jornalísticos curtos (2 a 4 frases) para cada matéria.
+    O resumo deve incluir:
+    - O que aconteceu (fato principal).
+    - Impacto no setor automotivo.
+    - Quem, onde e quando (se relevante).
+  expected_output: >
+    Retorne no formato JSON:
+    [
+      {
+        "keyword": "carros elétricos",
+        "title": "Vendas de carros elétricos disparam no Brasil",
+        "source": "G1",
+        "summary": "As vendas de veículos elétricos aumentaram 25% em 2025, impulsionadas por incentivos fiscais e novos lançamentos de montadoras internacionais."
+      }
+    ]
+  agent: Agent_De_Resumo
+  # Usa o resultado do Task_BuscadorNoticias como contexto
+  context: ["Task_BuscadorNoticias"]
+  output_key: news_resumo
+
+
+
+Task_Reporting:
+  description: >
+    Monte um relatório completo em formato Markdown com base nos dados resumidos.
+    Estruture em uma tabela com as seguintes colunas:
+
+    - Palavra-chave
+    - Tipo (Top / Rising)
+    - Score (se disponível)
+    - Título da notícia
+    - Fonte
+    - Link
+    - Data
+    - Resumo
+  expected_output: >
+    O relatório deve incluir um título e a data atual.
+    Exemplo:
+
+    ##  Relatório de Tendências - Setor Autos (30/10/2025)
+
+    | Palavra-chave | Tipo | Score | Título | Fonte | Data | Resumo |
+    |----------------|------|--------|--------|--------|--------|--------|
+    | carros elétricos | Rising | 89 | Vendas de carros elétricos disparam no Brasil | G1 | 30/10 | As vendas de veículos elétricos aumentaram 25%... |
+  agent: Agent_Reporter
+  # Usa o resultado do Task_Resumo como contexto
+  context: ["Task_Resumo"]
+  output_file: "resultado/Noticias.md"
